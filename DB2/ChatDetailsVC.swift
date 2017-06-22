@@ -75,7 +75,6 @@ class ChatDetailsVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
     func keyboardWillShow(notification: NSNotification) {
         var userInfo = notification.userInfo!
         let keyboardSize: CGSize = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue.size
-        let contentInsets = UIEdgeInsetsMake(0.0, 0.0, keyboardSize.height, 0.0)
         self.view.frame = CGRect(x: 0, y: -keyboardSize.height, width: self.view.frame.width, height: self.view.frame.height)
         
         

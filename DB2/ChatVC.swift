@@ -32,12 +32,9 @@ class ChatVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 let a = self.tableDataChanel!.map{i in i.users}
 
                 for  x in 0..<a.count {
-                    var line = ""
                     for  y in 0..<a[x].count {
                        self.usersData.append(a[x][y])
-                        line += " "
                     }
-                    print(line)
                 }
                 self.tableView.reloadData()
             }
@@ -72,27 +69,26 @@ class ChatVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.date.text = String(describing: date! )
             cell.count.text = String(data.unread_messages_count)
             cell.message.text = data.last_message!.text
-            cell.imageUser.sd_setImage(with:  URL(string: user.photo)!, placeholderImage: #imageLiteral(resourceName: "no_avatar"), options: [])
-            
+            print(user.photo)
+            cell.imageUser.sd_setImageWithPreviousCachedImage(with: NSURL(string: user.photo) as URL!, placeholderImage:#imageLiteral(resourceName: "no_avatar"), options: .transformAnimatedImage, progress: nil, completed: nil)            
             return cell
         }
         return UITableViewCell()
     }
 
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete{
-            usersData.remove(at: indexPath.row)
-            if tableDataChanel![indexPath.row/2].users.count == 0{
-            tableDataChanel?.remove(at: indexPath.row/2)
-            }
-            tableDataChanel![indexPath.row/2].users.remove(at: tableDataChanel![indexPath.section/2].users.count == 1 ? 0 : indexPath.row%2)
-            self.tableView.beginUpdates()
-            self.tableView.deleteRows(at: [indexPath], with: .fade)
-            self.tableView.endUpdates()
-            self.tableView.reloadData()
 
-            }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]?{
+        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in
+                self.usersData.remove(at: indexPath.row)
+                if self.tableDataChanel![indexPath.row/2].users.count == 0{
+                    self.tableDataChanel?.remove(at: indexPath.row/2)
+                }
+               self.tableDataChanel![indexPath.row/2].users.remove(at: self.tableDataChanel![indexPath.row/2].users.count == 1 ? 0 : indexPath.row%2)
+                    tableView.deleteRows(at: [indexPath], with: .fade)
         }
+        return [ deleteAction]
+    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let destinationVC = storyboard?.instantiateViewController(withIdentifier: "ChatDetailsVC") as? ChatDetailsVC {
